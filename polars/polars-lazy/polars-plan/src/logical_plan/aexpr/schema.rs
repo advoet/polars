@@ -109,7 +109,11 @@ impl AExpr {
                     Mean(expr) => {
                         let mut field =
                             arena.get(*expr).to_field(schema, Context::Default, arena)?;
-                        float_type(&mut field);
+                        if matches!(&field.dtype, Boolean) {
+                            field.coerce(DataType::Float64)
+                        } else {
+                            float_type(&mut field);
+                        }
                         Ok(field)
                     }
                     List(expr) => {
